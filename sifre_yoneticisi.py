@@ -34,6 +34,21 @@ def sifre_ekle(site_adi, kullanici_adi, sifre):
     conn.commit()
     conn.close()
 
+def sifre_listele():
+    conn = sql.connect('sifre_yoneticisi.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT site_adi, kullanici_adi, sifre FROM sifreler")
+    sifreler = cursor.fetchall()
+    if sifreler:
+        print("\nKayıtlı Şifreler:")
+        for site_adi, kullanici_adi, sifre_encrypted in sifreler:
+            sifre_decrypted = fernet.decrypt(sifre_encrypted).decode()
+            print(f"Site: {site_adi}, Kullanıcı Adı: {kullanici_adi}, Şifre: {sifre_decrypted}")
+    else:
+        print("\nKayıtlı şifre bulunamadı.")
+    conn.close()
+    
+
 def ana_menü():
     while True:
         print("\nŞifre Yöneticisi")
@@ -51,7 +66,7 @@ def ana_menü():
             sifre_ekle(site_adi, kullanici_adi, sifre)
             print("Şifre başarıyla eklendi.")
         elif secim == '2':
-            print("yakında eklenecek")
+            sifre_listele()
         elif secim == '3':
             print("yakında eklenecek")
         elif secim == '4':
