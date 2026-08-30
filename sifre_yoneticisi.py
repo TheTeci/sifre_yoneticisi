@@ -37,17 +37,28 @@ def sifre_ekle(site_adi, kullanici_adi, sifre):
 def sifre_listele():
     conn = sql.connect('sifre_yoneticisi.db')
     cursor = conn.cursor()
-    cursor.execute("SELECT site_adi, kullanici_adi, sifre FROM sifreler")
+    cursor.execute("SELECT id,site_adi, kullanici_adi, sifre FROM sifreler")
     sifreler = cursor.fetchall()
     if sifreler:
         print("\nKayıtlı Şifreler:")
-        for site_adi, kullanici_adi, sifre_encrypted in sifreler:
+        for id, site_adi, kullanici_adi, sifre_encrypted in sifreler:
             sifre_decrypted = fernet.decrypt(sifre_encrypted).decode()
-            print(f"Site: {site_adi}, Kullanıcı Adı: {kullanici_adi}, Şifre: {sifre_decrypted}")
+            print(f"İd: {id}, Site: {site_adi}, Kullanıcı Adı: {kullanici_adi}, Şifre: {sifre_decrypted}")
     else:
         print("\nKayıtlı şifre bulunamadı.")
     conn.close()
-    
+
+def sifre_sil(id):
+    conn = sql.connect('sifre_yoneticisi.db')
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM sifreler WHERE id = ?', (id,))
+    if cursor.rowcount == 0:
+        print("Belirtilen ID ile eşleşen bir şifre bulunamadı.")
+    else:
+        print("Şifre başarıyla silindi.")
+    conn.commit()
+    conn.close()
+
 
 def ana_menü():
     while True:
@@ -68,7 +79,9 @@ def ana_menü():
         elif secim == '2':
             sifre_listele()
         elif secim == '3':
-            print("yakında eklenecek")
+            sifre_listele()
+            id = input("Silmek istediğiniz şifrenin ID'si: ")
+            sifre_sil(id)
         elif secim == '4':
             print("Çıkış yapılıyor...")
             sys.exit()
