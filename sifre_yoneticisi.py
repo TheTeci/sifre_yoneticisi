@@ -26,6 +26,14 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS sifreler (
 conn.commit()
 conn.close()
 
+def sifre_ekle(site_adi, kullanici_adi, sifre):
+    conn = sql.connect('sifre_yoneticisi.db')
+    cursor = conn.cursor()
+    sifre_encrypted = fernet.encrypt(sifre.encode())
+    cursor.execute("INSERT INTO sifreler (site_adi, kullanici_adi, sifre) VALUES (?, ?, ?)", (site_adi, kullanici_adi, sifre_encrypted))
+    conn.commit()
+    conn.close()
+
 def ana_menü():
     while True:
         print("\nŞifre Yöneticisi")
@@ -37,7 +45,11 @@ def ana_menü():
         secim = input("Seçiminizi yapın (1-4): ")
 
         if secim == '1':
-            print("yakında eklenecek")
+            site_adi = input("Site Adı: ")
+            kullanici_adi = input("Kullanıcı Adı: ")
+            sifre = input("Şifre: ")
+            sifre_ekle(site_adi, kullanici_adi, sifre)
+            print("Şifre başarıyla eklendi.")
         elif secim == '2':
             print("yakında eklenecek")
         elif secim == '3':
