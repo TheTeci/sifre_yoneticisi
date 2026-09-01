@@ -1,5 +1,6 @@
 import sqlite3 as sql
 from cryptography.fernet import Fernet
+import hashlib
 import os
 import sys
 
@@ -12,6 +13,27 @@ else:
         key_file.write(key)
 
 fernet = Fernet(key)
+
+def master_sifre_kontrol():
+    if os.path.exists("master.hash"):
+        with open("master.hash", "r") as f:
+            master_sifre = f.read().strip()
+        girilen_sifre = input("Master şifrenizi girin: ")
+        hash_nesnesi = hashlib.sha256(girilen_sifre.encode())
+        hex_hash = hash_nesnesi.hexdigest()
+        if hex_hash != master_sifre:
+            print("Hatalı master şifre. Programdan çıkılıyor.")
+            sys.exit()
+        else:
+            print("Master şifre doğrulandı.")
+            ana_menü()
+    else:
+        master_sifre = input("Yeni bir master şifre oluşturun: ")
+        hash_nesnesi = hashlib.sha256(master_sifre.encode())
+        hex_hash = hash_nesnesi.hexdigest()
+        with open("master.hash", "w") as f:
+            f.write(hex_hash)
+        print("Master şifre başarıyla oluşturuldu.")
 
 conn = sql.connect('sifre_yoneticisi.db')
 
@@ -86,4 +108,4 @@ def ana_menü():
             print("Çıkış yapılıyor...")
             sys.exit()
 
-ana_menü()
+master_sifre_kontrol()
