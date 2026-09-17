@@ -18,15 +18,20 @@ def master_sifre_kontrol():
     if os.path.exists("master.hash"):
         with open("master.hash", "r") as f:
             master_sifre = f.read().strip()
-        girilen_sifre = input("Master şifrenizi girin: ")
-        hash_nesnesi = hashlib.sha256(girilen_sifre.encode())
-        hex_hash = hash_nesnesi.hexdigest()
-        if hex_hash != master_sifre:
-            print("Hatalı master şifre. Programdan çıkılıyor.")
-            sys.exit()
-        else:
-            print("Master şifre doğrulandı.")
-            ana_menü()
+
+        deneme = 0
+        while deneme < 3:
+            girilen_sifre = input("Master şifrenizi girin: ")
+            hash_nesnesi = hashlib.sha256(girilen_sifre.encode())
+            hex_hash = hash_nesnesi.hexdigest()
+            if hex_hash != master_sifre:
+                print("Hatalı master şifre. Lütfen tekrar deneyin.")
+                deneme += 1
+            else:
+                print("Master şifre doğrulandı.")
+                ana_menü()
+                return
+        print("3 hatalı giriş yaptınız. Programdan çıkılıyor.")
     else:
         master_sifre = input("Yeni bir master şifre oluşturun: ")
         hash_nesnesi = hashlib.sha256(master_sifre.encode())
@@ -34,6 +39,7 @@ def master_sifre_kontrol():
         with open("master.hash", "w") as f:
             f.write(hex_hash)
         print("Master şifre başarıyla oluşturuldu.")
+        ana_menü()
 
 conn = sql.connect('sifre_yoneticisi.db')
 
