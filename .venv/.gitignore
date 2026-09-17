@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 sifre_yoneticisi.db
 anahtar.key
+master.hash
